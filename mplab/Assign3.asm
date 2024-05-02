@@ -19,14 +19,11 @@ section .data
 	
 	
 section .bss
-	resultarr resb 2
-	
-	
-	
+	arr resb 2
+		
 section .text
 	global _start
 		_start:
-		
 		mov rbp,arr
 	up:
 		mov rax,[rbp]
@@ -37,7 +34,7 @@ section .text
 	negative:
 		inc byte[ncnt]
 	next:
-		add rbp,08h
+		add rbp,08h ;inc rbp
 		dec byte[count]
 		jnz up
 		

@@ -1,138 +1,110 @@
-%macro rw 3
+;-------------------------------HEX TO BCD--------------------------------------
+%macro rw %3
 mov rax,%1
-mov rdi,0
+mov rdi,%1
 mov rsi,%2
 mov rdx,%3
 syscall
-%endmacro
+%endmacro 
 
 section .data
-	msg1 db "Processor in protected ",0XA,0XD
-	msglen1 equ $-msg1
-	
-	msg2 db "Processor not in protected ",0XA,0XD
-	msglen2 equ $-msg2
-	
-	msg3 db "MSW value is: "
-	msglen3 equ $-msg3
-	
-	msg4 db 10, 13, "TR value is: "
-	msglen4 equ $-msg4
-	
-	msg5 db 10, 13, "LDTR value is: "
-	msglen5 equ $-msg5
-	
-	msg6 db 10, 13, "GDTR value is: "
-	msglen6 equ $-msg6
-	
-	msg7 db 10, 13, "IDTR value is: "
-	msglen7 equ $-msg7
-	
-	msg8 db ":"
-	msglen8 equ $-msg8
+msg1 db"Enter 4 digit hex number"
+lmsg1 equ $-msg1
+msg2 db "bcd number is:"
+lmsg2 equ $-msg2
+count db 04h
+msg3 db"Error performing operation"
+lmsg3 equ $-msg3
 
-    
-	msw1 dw 00h
-	tr_val dw 00h
-	ldt_val dw 00h
-	gdt_val dq 00h
-	idt_val dq 00h
-	
-	count db 00h
-	
-	
-	
-	
+
 section .bss
-	resultarr resb 4
-	resarr resb 16
-	
-	ans resb 8
+buff resb ,5
+
 
 section .text
-	global _start
-		_start:
-		
-		smsw word[msw1]
-		mov ax,word[msw1]
-		bt ax,0
-		jc is_one
-		rw 1,msg2,msglen2
-	is_one:
-		rw 1,msg1,msglen1
-		
-		
-		
-		mov ax,word[msw1]
-		call h_to_a
-		rw 1,msg3,msglen3
-		rw 1,resultarr,16
-		
-		
-		str word[tr_val]
-		mov ax,word[tr_val]
-		call h_to_a
-		rw 1,msg4,msglen4
-		rw 1,resultarr,16
-		
-		sldt word[ldt_val]
-		mov ax,word[ldt_val]
-		call h_to_a
-		rw 1,msg5,msglen5
-		rw 1,resultarr,16
-		
-		sgdt qword[gdt_val]
-		mov rax,qword[gdt_val]
-		call hex_to_ascii
-		rw 1,msg8,msglen8
-		rw 1,resarr,16
-		
-		
-		
+global_start:
+_start:
+rw,1,msg1,lmsg1
+rw,0,buff,5
 
-		
-		mov rax,60
-		mov rdi,00
-		syscall
-		
-		
-	h_to_a:
-		;mov ax,word[msw1]
-		mov rbp,resultarr
-		mov byte[count],4
-	up1:
-		rol ax,04
-		mov bl,al
-		and bl,0Fh
-		cmp bl,09h
-		jle next1
-		add bl,07h
-		
-	next1: 
-		add bl,30h
-		mov [rbp],bl
-		inc rbp
-		dec byte[count]
-		jnz up1
-		ret
-	
-	
-	hex_to_ascii:
-			rol rax,16
-			mov rbp, resarr
-			mov byte[count], 16
-		up:
-			rol rax, 04h
-			mov bl, al
-			and bl, 0Fh
-			cmp bl, 09h
-			jle skip
-			add bl, 07h
-		skip:
-			add bl, 30h
-			mov [rbp], bl
-			inc rbp
-			dec byte[count]
-			jnz up
-			ret
-	
+up:
+mov rsi,buffer
+loop:
+rol rbx,4
+mov al,[rsi]
+cmp al,0
+jbe error
+cmp al,9
+jmp sub30
+
+cmp al,'a'
+jbe error
+cmp al 'f'
+jmp sub57
+
+cmp al,'A'
+jbe error
+cmp al,'F'
+jmp sub37
+
+sub57:sub al,20
+sub37:sub al,7
+sub30:sub al,30
+
+add bx,al
+inc rsi
+dec byte[count]
+jnz loop
+
+error:
+rw,1,msg3,lmsg3
+
+
+exit:
+mov rax,60
+mov rdi,00
+
+;-------------------------------BCD TO HEX--------------------------------------
+section. data
+msg1 db"Enter 5 digit bcd number"
+lmsg1 equ $-msg1
+msg2 db "Hec number is:"
+lmsg2 equ $-msg2
+count db 6
+
+section.bss
+resultarr resb 16
+buffer resb 6
+
+
+section.text
+global_start:
+_start:
+bcd_to_hex:
+rw,1,msg1,lmsg1
+rw,0,buffer,6
+xor rax,rax  ;rax=0
+mov rsi,buffer
+mov rbx,10  ;rax=rax*rbx+cl
+
+
+up:
+mul rbx
+mov cl,[rsi]
+sub cl,30h
+add rax,cl
+inc rsi
+dec byte[count]
+jnz up
+
+
+mov [resultarr],rax
+call h_to_a
+
+
+
+
+
+
+
+

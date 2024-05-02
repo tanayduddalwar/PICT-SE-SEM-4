@@ -15,17 +15,14 @@ section .data
 	
 section .bss
 	count resb 1
-	str1 resb 16
-	resultarr resb 16
-	
-	
+	resultarr resb 17
 	
 section .text
 	global _start
 		_start:
-		rw 1,msg1,msglen1
-		rw 0,str1,25	
 		mov rbp,resultarr
+		rw 1,msg1,msglen1
+		rw 0,rbp,16
 		mov byte[count],16
 		up:
 		rol rax,04
@@ -41,7 +38,7 @@ section .text
 		inc rbp
 		dec byte[count]
 		jnz up
-		
+
 		rw 1,msg2,msglen2
 		rw 1,resultarr,16
 		

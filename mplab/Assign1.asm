@@ -21,8 +21,6 @@ numarr resb 85 ;17*5 "Enter"
 global _start
 section .text
 _start:
-
-mov byte[count],05
 mov rbp,numarr
 
 loop1:

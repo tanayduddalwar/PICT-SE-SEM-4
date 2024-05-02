@@ -9,6 +9,10 @@ syscall
 section .data
 	msg1 db "Before transfer: ",0XA,0XD
 	msglen1 equ $-msg1
+	msg3 db "Source: ",0XA,0XD
+	msglen3 equ $-msg3
+	msg4 db "Dest Block : ",0XA,0XD
+	msglen4 equ $-msg4
 	msg2 db "After overlapped: ",0XA,0XD
 	msglen2 equ $-msg2
 	msg3 db 10,13,"address: "
@@ -30,6 +34,7 @@ section .text
 		_start:
 
         rw,1,msg1,lmsg1
+		rw,
         mov rsi,sblock
         call block_display
 

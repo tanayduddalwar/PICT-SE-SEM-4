@@ -28,9 +28,7 @@ section .data
         m4 db 10d,13d,"Division: "
         l4 equ $-m4
         count db 00h
-
-
-
+        
 
 section .bss
         resultarr resb 16 ;to store the result of operation
@@ -74,7 +72,6 @@ section .text
         case5:  mov rax,60
                 mov rdi,0
                 syscall
-
 
 
 ;arithmetic operations
