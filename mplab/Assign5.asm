@@ -33,7 +33,7 @@ section .data
 section .bss
         resultarr resb 16 ;to store the result of operation
         choice resb 2
-        res resb 1
+        res resq 1
        
 section .text
         global _start:
@@ -72,7 +72,6 @@ section .text
         case5:  mov rax,60
                 mov rdi,0
                 syscall
-
 
 ;arithmetic operations
 addition:
@@ -113,7 +112,7 @@ division:
         ret
 
 h_to_a:
-mov al,byte[res]
+mov al,qword[res]
 mov rbp,resultarr
 mov byte[count],16
 up1:

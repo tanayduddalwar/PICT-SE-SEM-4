@@ -56,7 +56,8 @@ section .text
 	h_to_a:
 		mov al,byte[res]
 		mov rbp,resultarr
-		mov byte[count],2
+		mov byte[count],1
+
 	up1:
 		rol al,04
 		mov bl,al

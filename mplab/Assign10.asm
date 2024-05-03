@@ -28,8 +28,6 @@ call a_to_h
 mov rax,rbx
 call facto
 
-
-
 facto:
 dec rbx
 cmp rbx,01

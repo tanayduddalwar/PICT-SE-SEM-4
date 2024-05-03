@@ -93,7 +93,6 @@ section .text
 		syscall
 		
 	h_to_a:
-		;mov ax,word[msw1]
 		mov rbp,resultarr
 		mov byte[count],4
 	up1:
@@ -116,7 +115,7 @@ section .text
 	hex_to_ascii:
 			rol rax,16
 			mov rbp, resarr
-			mov byte[count], 16
+			mov byte[count], 12
 		up:
 			rol rax, 04h
 			mov bl, al

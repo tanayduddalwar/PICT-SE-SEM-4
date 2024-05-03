@@ -14,7 +14,7 @@ section .data
 	
 	
 section .bss
-	count resb 1
+	count resb 16
 	resultarr resb 17
 	
 section .text
@@ -23,7 +23,7 @@ section .text
 		mov rbp,resultarr
 		rw 1,msg1,msglen1
 		rw 0,rbp,16
-		mov byte[count],16
+		mov byte[count],17
 		up:
 		rol rax,04
 		mov bl,al

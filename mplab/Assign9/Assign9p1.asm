@@ -38,7 +38,7 @@ len6: equ $-msg6
 
 new: db "",0x0A
 new_len: equ $-new
-
+ 
 scount: db 0
 ncount: db 0
 ccount: db 0
