@@ -1,89 +1,101 @@
-#include <iostream>
-#include <string>
+#include<iostream>
 using namespace std;
 
-class Node {
+class Node{
 public:
     int key;
-    string number;
-    Node(int key, string num) {
-        this->key = key;
-        this->number = num;
-    }
-    Node(){
-        key=-1;
-        number="";
-    }
+    int value;
+    Node* next;
     
-  //  Node() : key(-1), number("") {} // Default constructor for initializing with default values
+    Node(int key, int value): key(key), value(value), next(nullptr) {}
 };
-
-class HashMap {
+class HashMap{
+private:
+    Node* head[10]; // Array of linked list heads
 public:
-    Node arr[10]; 
-    // No initializer, so default constructor of Node will be called for each element
-
-    // Constructor (not provided in your original code)
-    // HashMap() {}
-
-    int hashfunction(int key) {
-        return (3 * key + 5) % 10;
-    }
-
-    int probe(int index) {
-        int i = 0;
-        while (!arr[(index + (3 * i + 5)) % 10].number.empty()) {
-            i++;
+    HashMap() {
+        for (int i = 0; i < 10; ++i) {
+            head[i] = nullptr;
         }
-        return (index + (3 * i + 5)) % 10;
+    }
+    int hashfunction(int key){
+        return key % 10;
     }
 
-    void insertwithoutreplacement(int key, string value) {
+    void insert(int key, int value){
+        Node *temp = new Node(key, value);
         int index = hashfunction(key);
-        if (arr[index].number.empty()) {
-            arr[index] = Node(key, value);
+        if(head[index] == NULL){
+            head[index] = temp;
         }
-        else {
-            int newIndex = probe(index);
-            arr[newIndex] = Node(key, value);
+        
+        else{
+            Node* curr = head[index];
+            while(curr->next != NULL){
+                curr = curr->next;
+            }
+            curr->next = temp;
         }
     }
 
-    void insertwithreplacement(int key, string value) {
+    int search(int key){
         int index = hashfunction(key);
-        if (arr[index].number.empty()) {
-            arr[index] = Node(key, value);
+        Node* curr = head[index];
+        while(curr != NULL){
+            if(curr->key == key){
+                return curr->value;
+            }
+            curr = curr->next;
         }
-        else if ((3 * arr[index].key + 5) % 10 == index) {
-            int next = probe(index);
-            arr[next] = Node(key, value);
+        return -1;
+    }
+    void remove(int key){
+        int index = hashfunction(key);
+        Node* curr = head[index];
+        Node* prev = NULL;
+        while (curr != NULL && curr->key != key){
+            prev = curr;
+            curr = curr->next;
         }
-        else {
-            string val = arr[index].number;
-            int key1 = arr[index].key;
-            int newIndex = probe(index);
-            arr[newIndex] = Node(key1, val);
-            arr[index] = Node(key, value);
+        if(curr == NULL){
+            cout << "No element found" << endl;
         }
+        if(prev == NULL){
+            head[index] = curr->next;
+        }
+        else{
+            prev->next = curr->next;
+        }
+        delete curr;
+        cout << "Node deleted successfully" << endl;
     }
 
-    void display() {
-        for (int i = 0; i < 10; i++) {
-            if (!arr[i].number.empty()) {
-                cout << "Index " << i << ": Key " << arr[i].key << ", Value = " << arr[i].number << endl;
+    void display(){
+        for(int i=0;i<10;i++){
+            Node* tmp=head[i];
+            cout<<"Index"<<i<<":";
+            while(tmp!=NULL){   
+                cout<<"["<<tmp->key<<","<<tmp->value<<"]"<<"->";
             }
-            else {
-                cout << "Index " << i << ": Empty" << endl;
-            }
+            cout<<"NULL"<<endl;
         }
     }
 };
 
-int main() {
-    HashMap mp;
-    mp.insertwithoutreplacement(5, "Five");
-    mp.insertwithreplacement(15, "Fifteen");
-    mp.display();
+int main(){
+    HashMap map;
+    map.insert(5, 10);
+    map.insert(12, 20);
+    map.insert(25, 32);
+    map.insert(14, 8);
+    map.display();
+    cout << "Value for key 5: " << map.search(5) << endl;
+    cout << "Value for key 15: " << map.search(15) << endl;
+    cout << "Value for key 25: " << map.search(25) << endl;
+    cout << "Value for key 35: " << map.search(35) << endl;
+    map.remove(5);
+    cout << "Value for key 15 after removal: " << map.search(12) << endl;
+    map.display();
 
     return 0;
 }

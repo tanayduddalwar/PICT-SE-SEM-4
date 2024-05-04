@@ -63,7 +63,7 @@ public:
                 root = temp;
             } else {
                 Node* temp = findmin(root->right);
-                root->data = temp->data;
+                root = temp;
                 deleted(root->right, temp->data);
             }
         }

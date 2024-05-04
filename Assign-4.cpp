@@ -10,12 +10,18 @@ public:
         this->key = key;
         this->number = num;
     }
-    Node() : key(-1), number("") {} // Default constructor for initializing with default values
+    Node(){
+        key=-1;
+        number="";
+    }
+    
+  //  Node() : key(-1), number("") {} // Default constructor for initializing with default values
 };
 
 class HashMap {
 public:
-    Node arr[10]; // No initializer, so default constructor of Node will be called for each element
+    Node arr[10]; 
+    // No initializer, so default constructor of Node will be called for each element
 
     // Constructor (not provided in your original code)
     // HashMap() {}
