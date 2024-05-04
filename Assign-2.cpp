@@ -1,138 +1,221 @@
 #include <iostream>
-#include <algorithm>
+#include <stack>
+#include<queue>
 using namespace std;
 
-struct Node {
-    int val;
-    Node* lchild;
-    Node* rchild;
+class Node {
+public:
+    Node* left;
+    Node* right;
+    int data;
+    Node(int val) {
+        this->data = val;
+        left = NULL;
+        right = NULL;
+    }
 };
 
-void insert(Node*& root) {
-    int value;
-    while (true) {
-        cout << "Enter the value of the root (-1 to stop):" << endl;
-        cin >> value;
-        if (value == -1) {
-            break;
+class BinaryTree {
+public:
+    Node* root;
+    BinaryTree() {
+        root = NULL;
+    }
+
+    void insert(Node*& root, int value) {
+        if (root == nullptr) {
+            root = new Node(value);
+            return;
         }
-        if (root == NULL) {
-            root = new Node();
-            root->val = value;
-            root->lchild = root->rchild = NULL;
-            continue;
-        }
-        Node* curr = root;
-        while (true) {
-            if (value < curr->val) {
-                if (curr->lchild == NULL) {
-                    curr->lchild = new Node();
-                    curr->lchild->lchild = curr->lchild->rchild = NULL;
-                    curr->lchild->val = value;
-                    break;
-                } else {
-                    curr = curr->lchild;
-                }
-            } else if (value > curr->val) {
-                if (curr->rchild == NULL) {
-                    curr->rchild = new Node();
-                    curr->rchild->lchild = curr->rchild->rchild = NULL;
-                    curr->rchild->val = value;
-                    break;
-                } else {
-                    curr = curr->rchild;
-                }
+
+        if (value < root->data) {
+            if (root->left == nullptr) {
+                root->left = new Node(value);
+            } else {
+                insert(root->left, value);
+            }
+        } else if (value > root->data) {
+            if (root->right == nullptr) {
+                root->right = new Node(value);
+            } else {
+                insert(root->right, value);
             }
         }
     }
-}
 
-void findmin(Node* root) {
-    if (root == NULL) {
-        cout << "Tree is empty" << endl;
-        return;
-    }
-    while (root->lchild != NULL) {
-        root = root->lchild;
-    }
-    cout << "Min value in the BST is: " << root->val << endl;
-}
-
-void findmax(Node* root) {
-    if (root == NULL) {
-        cout << "Tree is empty" << endl;
-        return;
-    }
-    while (root->rchild != NULL) {
-        root = root->rchild;
-    }
-    cout << "Max value in the BST is: " << root->val << endl;
-}
-
-int height(Node* root) {
-    if (root == NULL) {
-        return 0;
-    }
-    int lh = height(root->lchild);
-    int rh = height(root->rchild);
-    return 1 + max(lh, rh);
-}
-
-void swapping(Node* root) {
-    if (root == NULL) {
-        return;
-    }
-    Node* temp = root->lchild;
-    root->lchild = root->rchild;
-    root->rchild = temp;
-    swapping(root->lchild);
-    swapping(root->rchild);
-}
-
-void inorderTraversal(Node* root) {
-    if (root == NULL) {
-        return;
-    }
-    inorderTraversal(root->lchild);
-    cout << root->val << " ";
-    inorderTraversal(root->rchild);
-}
-
-void search(Node* root, int value) {
-    if (root == NULL) {
-        cout << "Tree is empty" << endl;
-        return;
-    }
-    Node* curr = root;
-    while (curr != NULL) {
-        if (curr->val == value) {
-            cout << "Element is found in BST" << endl;
+    void deleted(Node*& root, int value) {
+        if (root == NULL) {
             return;
-        } else if (curr->val < value) {
-            curr = curr->rchild;
-        } else if (value < curr->val) {
-            curr = curr->lchild;
+        }
+
+        if (value < root->data) {
+            deleted(root->left, value);
+        } else if (value > root->data) {
+            deleted(root->right, value);
+        } else {
+            if (root->left == NULL) {
+                Node* temp = root->right;
+                delete root;
+                root = temp;
+            } else if (root->right == NULL) {
+                Node* temp = root->left;
+                delete root;
+                root = temp;
+            } else {
+                Node* temp = findmin(root->right);
+                root->data = temp->data;
+                deleted(root->right, temp->data);
+            }
         }
     }
-    cout << "Element is not found" << endl;
+
+    Node* findmin(Node* root) {
+        if (root == NULL) {
+            cout << "Tree is empty." << endl;
+          
+        }
+        while (root->left != NULL) {
+            root = root->left;
+        }
+        cout << "Minimum value in the tree: " << root->data << endl;
+    }
+
+    int height(Node* root) {
+        if (root == NULL) {
+            return 0;
+        }
+        int lh = height(root->left);
+        int rh = height(root->right);
+        return 1 + max(lh, rh);
+    }
+
+    void inorder(Node* root) {
+        stack<Node*> st;
+        Node* node = root;
+        while (node != NULL || !st.empty()) {
+            if (node != NULL) {
+                st.push(node);
+                node = node->left;
+            }
+            else{
+            node = st.top();
+            st.pop();
+            cout << node->data << " ";
+            node = node->right;
+        }}
+    }
+    void preorder(Node* root){
+        stack<Node*>st;
+        Node* node=root;
+        while(!st.empty() || node!=NULL){
+            if(node!=NULL){
+                cout<<node->data<<" ";
+                st.push(node);
+                node=node->left;
+            }
+            else{
+                node=st.top();
+                st.pop();
+                node=node->right;
+            }
+        }
+    }
+    void searching(Node* root) {
+        int noofcomparisons = 0;
+        int x;
+        cout << "Enter the element to search: ";
+        cin >> x;
+
+        Node* current = root;
+        while (current != NULL) {
+            noofcomparisons++;
+            if (current->data == x) {
+                cout << "Element found after " << noofcomparisons << " comparisons." << endl;
+                return;
+            } else if (x < current->data) {
+                current = current->left;
+            } else {
+                current = current->right;
+            }
+        }
+        cout << "Element not found." << endl;
+    }
+    void inorderDesc(Node* root) {
+    if (root == NULL)
+        return;
+    stack<Node*> st;
+    Node* node = root;
+    while (node != NULL || !st.empty()) {
+        if (node != NULL) {
+            st.push(node);
+            node = node->right; // Visit right subtree first
+        } else {
+            node = st.top();
+            st.pop();
+            cout << node->data << " "; // Print current node
+            node = node->left; // Visit left subtree
+        }
+    }
 }
 
+void levelorder(Node* root){
+    if(root==NULL){
+        return;
+    }
+    
+    queue<Node*>q;
+    q.push(root);
+    while(root!=NULL){
+        Node *node=q.front();
+        cout<<node<<" ";
+        q.pop();
+        if(root->left){
+            q.push(node->left);
+        }
+        if(root->right){
+            q.push(node->right);
+        }
+
+    }
+}
+void swapTree(Node* root) {
+    if (root == NULL) {
+        return;
+    }
+    
+    // Swap left and right pointers
+    Node* temp = root->left;
+    root->left = root->right;
+    root->right = temp;
+    
+    // Recursively swap the left and right subtrees
+    swapTree(root->left);
+    swapTree(root->right);
+}
+
+
+};
+
 int main() {
-    Node* root = nullptr;
-    cout << "Inserting Values" << endl;
-    insert(root);
-    inorderTraversal(root);
+    BinaryTree tree;
+  int size;
+  cout<<"Enter the size of the tree"<<endl;
+  cin>>size;
+  for(int i=0;i<size;i++){
+    int value;
+    cout<<"Enter the value of the node"<<endl;
+    cin>>value;
+    tree.insert(tree.root,value);
+  }
+
+    cout << "Inorder traversal of the tree: ";
+    tree.inorder(tree.root);
     cout << endl;
-    cout << "Height of the tree: " << height(root) << endl;
-    findmin(root);
-    findmax(root);
-    int searchValue;
-    cout << "Enter the value to be searched: ";
-    cin >> searchValue;
-    search(root, searchValue);
-    cout << "Swapping left and right pointers" << endl;
-    swapping(root);
-    inorderTraversal(root);
-    cout << endl;
+
+    tree.findmin(tree.root);
+    tree.searching(tree.root);
+    tree.levelorder(tree.root);
+    tree.inorderDesc(tree.root);
+
     return 0;
 }
