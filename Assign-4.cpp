@@ -32,20 +32,6 @@ int insertwithoutreplacement(Node arr[],int key,string value){
     }
 }
 
-
-
-// int insertwithoutreplacement(Node arr[], int key, string value) {
-//     int index = hashfunc(key);
-//     if (arr[index].value == "") {
-//         arr[index].key = key;
-//         arr[index].value = value;
-//     } 
-//     else {
-//         int nextIndex = probe(arr, key);
-//         arr[nextIndex].key = key;
-//         arr[nextIndex].value = value;
-//     }
-// }
 int insertwithreplacement(Node arr[],int key,string value){
     int index=hashfunc(key);
     if(arr[index].value.empty()){
