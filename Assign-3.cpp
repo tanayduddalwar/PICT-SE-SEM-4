@@ -172,7 +172,7 @@ int main() {
     inorderTraversal(root);
     cout << endl;
 
-    root = deleteNode(root, 10);
+   // root = deleteNode(root, 10);
 
     cout << "Inorder Traversal after deletion: ";
     inorderTraversal(root);
