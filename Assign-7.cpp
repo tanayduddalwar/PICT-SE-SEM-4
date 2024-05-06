@@ -3,65 +3,66 @@
 #include <queue>
 using namespace std;
 
-int spanningTree(int V, vector<pair<int,int>> adj[]) {
+int minTotalCost(int numOffices, vector<pair<int,int>> connections[]) {
     priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
     pq.push({0,0});
-    vector<int> vis(V,0);
-    int sum=0;
+    vector<int> visited(numOffices,0);
+    int totalCost = 0;
     while(!pq.empty()){
-        auto it=pq.top();
+        auto it = pq.top();
         pq.pop();
-        int weight=it.first;
-        int node=it.second;
-        if(vis[node]==1){
+        int cost = it.first;
+        int office = it.second;
+        if(visited[office]==1){
             continue;
         }
-        sum=sum+weight;
-        vis[node]=1;
-        for(auto it:adj[node]){
-            int adjnode=it.first;
-            int wei=it.second;
-            if(!vis[adjnode]){
-                pq.push({wei,adjnode});
+        totalCost += cost;
+        visited[office] = 1;
+        for(auto edge : connections[office]){
+            int nextOffice = edge.first;
+            int connectionCost = edge.second;
+            if(!visited[nextOffice]){
+                pq.push({connectionCost, nextOffice});
             }
         }
     }
-    return sum;
+    return totalCost;
 }
 
-void printGraph(int V, vector<pair<int,int>> adj[]) {
+void printConnections(int numOffices, vector<pair<int,int>> connections[]) {
     cout << "graph G {" << endl;
-    for (int i = 0; i < V; ++i) {
-        for (auto& edge : adj[i]) {
+    for (int i = 0; i < numOffices; ++i) {
+        for (auto& edge : connections[i]) {
             int to = edge.first;
-            int weight = edge.second;
-            cout << i << " -- " << to << " [label=\"" << weight << "\"];" << endl;
+            int cost = edge.second;
+            cout << i << " -- " << to << " [label=\"" << cost << "\"];" << endl;
         }
     }
     cout << "}" << endl;
 }
 
 int main() {
-    int V; // Number of vertices
-    cout << "Enter the number of vertices: ";
-    cin >> V;
-    vector<pair<int,int>> adj[V];
+    int numOffices; // Number of offices
+    cout << "Enter the number of offices: ";
+    cin >> numOffices;
+    vector<pair<int,int>> connections[numOffices];
 
     // Taking input dynamically from the user
-    int E;
-    cout << "Enter the number of edges: ";
-    cin >> E;
-    cout << "Enter the edges in the format 'source destination weight':" << endl;
-    for (int i = 0; i < E; ++i) {
-        int source, destination, weight;
-        cin >> source >> destination >> weight;
-        adj[source].push_back({destination, weight});
+    int numConnections;
+    cout << "Enter the number of connections: ";
+    cin >> numConnections;
+    cout << "Enter the connections in the format 'office1 office2 cost':" << endl;
+    for (int i = 0; i < numConnections; ++i) {
+        int office1, office2, cost;
+        cin >> office1 >> office2 >> cost;
+        connections[office1].push_back({office2, cost});
+        connections[office2].push_back({office1, cost}); // Assuming bidirectional connections
     }
 
-    printGraph(V, adj);
+    printConnections(numOffices, connections);
 
-    int min_cost = spanningTree(V, adj);
-    cout << "Minimum cost of spanning tree: " << min_cost << endl;
+    int minTotal = minTotalCost(numOffices, connections);
+    cout << "Minimum total cost of connecting all offices: " << minTotal << endl;
 
     return 0;
 }
